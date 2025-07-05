@@ -13,12 +13,12 @@
     <div id="app">
       <h1>保健按摩师初级理论知识试卷</h1>
       <h2>
-        <span>*绿色选项是正确答案</span>
-        <!-- <button>开始模拟考试</button> -->
+        <span>*绿色文字是正确答案</span>
         <van-button type="primary" size="small">开始模拟考试</van-button>
       </h2>
 
-      <h3>选择题部分</h3>
+      <h3>选择题</h3>
+
       <div class="choice-item" v-for="item in data.choices" :key="item.id">
         <span class="question">{{item.title}}</span>
         <div class="answer">
@@ -31,30 +31,41 @@
         </div>
       </div>
 
-      <div style="height: 1.5rem;"></div>
+      <h3>判断题</h3>
+
+      <div class="judge-item" v-for="item in data.judges" :key="item.id">
+        <div class="question">{{item.title}}</div>
+         <div class="answer">
+          {{item.answer}}
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 1.5rem"></div>
     </div>
 
     <script>
       const { createApp, ref } = Vue
-      
+
       fetch('./data.json')
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           initApp(data)
         })
-        .catch(error => console.error('Error loading data:', error))
+        .catch((error) => console.error('Error loading data:', error))
 
       function initApp(data) {
         const app = createApp({
           setup() {
-            
-            function isChiceRight(item,index){
-              return item.options[index].indexOf(item.answer) > -1 ? 'right' : ''
+            function isChiceRight(item, index) {
+              return item.options[index].indexOf(item.answer) > -1
+                ? 'right'
+                : ''
             }
 
             return {
               data,
-              isChiceRight
+              isChiceRight,
             }
           },
         })
