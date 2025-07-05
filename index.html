@@ -12,6 +12,11 @@
     <script src="./lib/vant.min.js"></script>
     <div id="app">
       <h1>保健按摩师初级理论知识试卷</h1>
+      <img src="./images/wxpay.jpg" width="100%" alt="">
+      <span>如果您觉得网站有帮助到了您，可以打赏一下作者吗？1元不嫌少，5元不嫌多。</span>
+
+      <img class="top" src="./images/top.png" alt="" @click="scrollToTop" />
+
       <h2>
         <span>*绿色文字是正确答案</span>
         <van-button type="primary" size="small">开始模拟考试</van-button>
@@ -63,9 +68,15 @@
                 : ''
             }
 
+            // 滚动到顶部
+            function scrollToTop() {
+              window.scrollTo(0, 0)
+            }
+
             return {
               data,
               isChiceRight,
+              scrollToTop
             }
           },
         })
