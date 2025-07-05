@@ -12,14 +12,18 @@
     <script src="./lib/vant.min.js"></script>
     <div id="app">
       <h1>保健按摩师初级理论知识试卷</h1>
-      <img src="./images/wxpay.jpg" width="100%" alt="">
-      <span>如果您觉得网站有帮助到了您，可以打赏一下作者吗？1元不嫌少，5元不嫌多。</span>
+      <img src="./images/wxpay.jpg" width="100%" alt="" />
+      <span
+        >如果您觉得网站有帮助到了您，可以打赏一下作者吗？1元不嫌少，5元不嫌多。</span
+      >
 
       <img class="top" src="./images/top.png" alt="" @click="scrollToTop" />
 
       <h2>
         <span>*绿色文字是正确答案</span>
-        <van-button type="primary" size="small">开始模拟考试</van-button>
+        <van-button type="primary" size="small" @click="showPop = true"
+          >开始模拟考试</van-button
+        >
       </h2>
 
       <h3>选择题</h3>
@@ -40,17 +44,18 @@
 
       <div class="judge-item" v-for="item in data.judges" :key="item.id">
         <div class="question">{{item.title}}</div>
-         <div class="answer">
-          {{item.answer}}
-          </div>
-        </div>
+        <div class="answer">{{item.answer}}</div>
       </div>
 
       <div style="height: 1.5rem"></div>
+
+      <van-popup v-model:show="showPop" round :style="{ padding: '1rem' }"
+        >该功能在测试阶段，在7月8号早上上线。</van-popup
+      >
     </div>
 
     <script>
-      const { createApp, ref } = Vue
+      const { createApp, ref, onMounted } = Vue
 
       fetch('./data.json')
         .then((response) => response.json())
@@ -60,8 +65,58 @@
         .catch((error) => console.error('Error loading data:', error))
 
       function initApp(data) {
+        // 获取滚动容器(移动端可能是document.documentElement)
+        function getScrollContainer() {
+          return document.documentElement.scrollHeight > window.innerHeight 
+            ? document.documentElement 
+            : document.body
+        }
+
+        // 保存滚动位置到localStorage
+        function saveScrollPosition() {
+          try {
+            const container = getScrollContainer()
+            localStorage.setItem('scrollPosition', container.scrollTop)
+          } catch (e) {
+            console.error('保存滚动位置失败:', e)
+          }
+        }
+
+        // 恢复滚动位置
+        function restoreScrollPosition() {
+          try {
+            const savedPosition = localStorage.getItem('scrollPosition')
+            if (savedPosition) {
+              const container = getScrollContainer()
+              container.scrollTop = parseInt(savedPosition)
+            }
+          } catch (e) {
+            console.error('恢复滚动位置失败:', e)
+          }
+        }
+
+        // 添加页面状态变化事件监听
+        function handleVisibilityChange() {
+          if (document.visibilityState === 'hidden') {
+            console.log('页面隐藏，保存滚动位置')
+            saveScrollPosition()
+          }
+        }
+        
+        // 同时监听visibilitychange和beforeunload
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        window.addEventListener('beforeunload', saveScrollPosition)
+        
+        console.log('已添加滚动位置保存监听器')
         const app = createApp({
           setup() {
+            // 恢复保存的滚动位置
+            onMounted(() => {
+              restoreScrollPosition()
+            })
+
+            const showPop = ref(false)
+
             function isChiceRight(item, index) {
               return item.options[index].indexOf(item.answer) > -1
                 ? 'right'
@@ -73,10 +128,15 @@
               window.scrollTo(0, 0)
             }
 
+            // 去模拟考试
+            function toExam() {}
+
             return {
               data,
+              showPop,
               isChiceRight,
-              scrollToTop
+              scrollToTop,
+              toExam,
             }
           },
         })
