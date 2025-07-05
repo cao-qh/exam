@@ -12,10 +12,6 @@
     <script src="./lib/vant.min.js"></script>
     <div id="app">
       <h1>保健按摩师初级理论知识试卷</h1>
-      <img src="./images/wxpay.jpg" width="100%" alt="" />
-      <span
-        >如果您觉得网站有帮助到了您，可以打赏一下作者吗？1元不嫌少，5元不嫌多。</span
-      >
 
       <img class="top" src="./images/top.png" alt="" @click="scrollToTop" />
 
@@ -47,10 +43,16 @@
         <div class="answer">{{item.answer}}</div>
       </div>
 
+      <div style="margin-top: 1rem">
+        <img src="./images/wxpay.jpg" width="100%" alt="" />
+        <span
+          >如果您觉得网站有帮助到您，可以打赏一下作者吗？1元5元都可以。</span
+        >
+      </div>
       <div style="height: 1.5rem"></div>
 
       <van-popup v-model:show="showPop" round :style="{ padding: '1rem' }"
-        >该功能在测试阶段，在7月8号早上上线。</van-popup
+        >该功能在测试阶段，在7月7号早上上线。</van-popup
       >
     </div>
 
@@ -67,8 +69,8 @@
       function initApp(data) {
         // 获取滚动容器(移动端可能是document.documentElement)
         function getScrollContainer() {
-          return document.documentElement.scrollHeight > window.innerHeight 
-            ? document.documentElement 
+          return document.documentElement.scrollHeight > window.innerHeight
+            ? document.documentElement
             : document.body
         }
 
@@ -102,11 +104,11 @@
             saveScrollPosition()
           }
         }
-        
+
         // 同时监听visibilitychange和beforeunload
         document.addEventListener('visibilitychange', handleVisibilityChange)
         window.addEventListener('beforeunload', saveScrollPosition)
-        
+
         console.log('已添加滚动位置保存监听器')
         const app = createApp({
           setup() {
