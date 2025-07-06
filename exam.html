@@ -13,28 +13,107 @@
     <script src="./lib/vant.min.js"></script>
     <script src="./utils/randomDraw.js"></script>
     <div id="app">
+      <img class="top" src="./images/top.png" alt="" @click="scrollToTop" />
+
       <h1>保健按摩师初级理论模拟考试</h1>
 
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div>
+          <van-button
+            style="margin-right: 0.5rem"
+            size="small"
+            type="primary"
+            @click="submit"
+            >交 卷</van-button
+          >
+          <van-button size="small" type="primary" @click="redo"
+            >重 做</van-button
+          >
+        </div>
+        <div style="color: blue" v-if="isSubmit">分数：{{score}}</div>
+      </div>
+
       <h3>选择题</h3>
-      <div class="choice-item" v-for="(item,index) in choiceList" :key="item.id">
-        <span class="question">{{index+1}}.{{item.title}}</span>
+      <div
+        class="choice-item"
+        v-for="(item,index) in choiceList"
+        :key="item.id"
+      >
+        <span :class="{wrong: isChoiceWrong(item)}">{{index+1}}.{{item.title}}</span>
         <div class="answer">
           <van-radio-group v-model="item.checked" shape="square">
             <van-radio :name="item.options[0]">{{item.options[0]}}</van-radio>
-            <div style="height: 0.3rem;"></div>
+            <div style="height: 0.3rem"></div>
             <van-radio :name="item.options[1]">{{item.options[1]}}</van-radio>
-            <div style="height: 0.3rem;"></div>
+            <div style="height: 0.3rem"></div>
             <van-radio :name="item.options[2]">{{item.options[2]}}</van-radio>
-            <div style="height: 0.3rem;"></div>
+            <div style="height: 0.3rem"></div>
             <van-radio :name="item.options[3]">{{item.options[3]}}</van-radio>
           </van-radio-group>
+        </div>
+        <div
+          style="margin-top: 0.3rem; color: green"
+          v-if="isChoiceWrong(item)"
+        >
+          正确答案：{{item.answer}}
         </div>
       </div>
 
       <h3>判断题</h3>
       <div class="judge-item" v-for="(item,index) in judgeList" :key="item.id">
-        <span>{{index+1}}.{{item.title}}</span>
+        <span :class="{wrong: isJudgeWrong(item)}">{{index+1}}.{{item.title}}</span>
+        <div class="answer">
+          <van-radio-group
+            v-model="item.checked"
+            shape="square"
+            direction="horizontal"
+          >
+            <van-radio name="对">对</van-radio>
+            <div style="height: 0.3rem"></div>
+            <van-radio style="margin-left: 2rem" name="错">错</van-radio>
+          </van-radio-group>
+        </div>
+        <div style="margin-top: 0.3rem; color: green" v-if="isJudgeWrong(item)">
+          正确答案：{{item.answer}}
+        </div>
       </div>
+
+      <div style="text-align: center; margin-top: 1.5rem">
+        <van-button style="margin-right: 0.5rem" type="primary" @click="submit"
+          >交 卷</van-button
+        >
+      </div>
+      <div style="height: 1.5rem"></div>
+
+      <van-popup
+        v-model:show="showPop"
+        round
+        :style="{ padding: '1rem',display: 'flex', justifyContent: 'center', alignItems: 'center',flexDirection: 'column',width: '80%' }"
+      >
+        <p>{{popMsg}}</p>
+        <van-button size="small" type="primary" @click="caclScore"
+          >确 定</van-button
+        >
+      </van-popup>
+
+      <van-overlay :show="loading">
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          "
+        >
+          <van-loading type="spinner">计算中...</van-loading>
+        </div>
+      </van-overlay>
     </div>
 
     <script>
@@ -54,16 +133,104 @@
             const choiceList = ref(randomDraw(data.choices, 80))
             // 判断题列表
             const judgeList = ref(randomDraw(data.judges, 20))
+            // 提示文字
+            const showPop = ref(false)
+            const popMsg = ref('')
+
+            const loading = ref(false)
+
+            // 是否提交
+            const isSubmit = ref(false)
+            // 分数
+            const score = ref(0)
 
             // 滚动到顶部
             function scrollToTop() {
               window.scrollTo(0, 0)
             }
 
+            // 交卷
+            function submit() {
+              if (isSubmit.value) {
+                vant.showToast('试卷已提交')
+                return
+              } else {
+                showPoPp('是否立即提交试卷？')
+              }
+            }
+
+            // 计算分数
+            function caclScore() {
+              showPop.value = false
+              // loading
+              loading.value = true
+              // 计算选择题分数
+              choiceList.value.forEach((item) => {
+                // console.log(item.checked?item.checked[0]:'', item.answer)
+                if (item.checked && item.checked[0] === item.answer) {
+                  score.value++
+                }
+              })
+              // 计算判断题分数
+              judgeList.value.forEach((item) => {
+                if (item.checked && item.checked === item.answer) {
+                  score.value++
+                }
+              })
+
+              // 交卷
+              isSubmit.value = true
+              loading.value = false
+              // 滚动到顶部
+              scrollToTop()
+              vant.showToast('交卷成功')
+            }
+
+            // 显示弹窗
+            function showPoPp(msg) {
+              popMsg.value = msg
+              showPop.value = true
+            }
+
+            // 重做
+            function redo() {
+              location.reload()
+            }
+
+            // 选择题是否选错
+            function isChoiceWrong(item) {
+              if (isSubmit.value) {
+                if (item.checked === undefined) return true
+                if (item.checked[0] !== item.answer) return true
+              } else {
+                return false
+              }
+            }
+
+            // 判断题是否选错
+            function isJudgeWrong(item) {
+              if (isSubmit.value) {
+                if(item.checked=== undefined) return true
+                if(item.checked !== item.answer) return true
+              } else {
+                return false
+              }
+            }
+
             return {
               choiceList,
               judgeList,
+              popMsg,
+              showPop,
+              loading,
+              isSubmit,
+              score,
               scrollToTop,
+              submit,
+              caclScore,
+              redo,
+              isChoiceWrong,
+              isJudgeWrong,
             }
           },
         })

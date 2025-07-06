@@ -7,7 +7,10 @@
   margin-top: 0.3rem;
 }
 
-/* .choice-item .answer div {
-  display: flex;
-  flex-direction: column;
-} */
+.judge-item .answer {
+  margin-top: 0.3rem;
+}
+
+.wrong {
+  color: red;
+}
