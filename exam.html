@@ -45,7 +45,9 @@
         v-for="(item,index) in choiceList"
         :key="item.id"
       >
-        <span :class="{wrong: isChoiceWrong(item)}">{{index+1}}.{{item.title}}</span>
+        <span :class="{wrong: isChoiceWrong(item)}"
+          >{{index+1}}.{{item.title}}</span
+        >
         <div class="answer">
           <van-radio-group v-model="item.checked" shape="square">
             <van-radio :name="item.options[0]">{{item.options[0]}}</van-radio>
@@ -67,7 +69,9 @@
 
       <h3>判断题</h3>
       <div class="judge-item" v-for="(item,index) in judgeList" :key="item.id">
-        <span :class="{wrong: isJudgeWrong(item)}">{{index+1}}.{{item.title}}</span>
+        <span :class="{wrong: isJudgeWrong(item)}"
+          >{{index+1}}.{{item.title}}</span
+        >
         <div class="answer">
           <van-radio-group
             v-model="item.checked"
@@ -89,6 +93,14 @@
           >交 卷</van-button
         >
       </div>
+
+      <div style="margin-top: 1rem">
+        <img src="./images/wxpay.jpg" width="100%" alt="" />
+        <span
+          >如果您觉得网站有帮助到您，可以打赏一下作者吗？1元5元都可以。</span
+        >
+      </div>
+
       <div style="height: 1.5rem"></div>
 
       <van-popup
@@ -97,7 +109,7 @@
         :style="{ padding: '1rem',display: 'flex', justifyContent: 'center', alignItems: 'center',flexDirection: 'column',width: '80%' }"
       >
         <p>{{popMsg}}</p>
-        <van-button size="small" type="primary" @click="caclScore"
+        <van-button size="small" type="primary" @click="popConfirm"
           >确 定</van-button
         >
       </van-popup>
@@ -136,6 +148,7 @@
             // 提示文字
             const showPop = ref(false)
             const popMsg = ref('')
+            const popType = ref('')
 
             const loading = ref(false)
 
@@ -155,13 +168,12 @@
                 vant.showToast('试卷已提交')
                 return
               } else {
-                showPoPp('是否立即提交试卷？')
+                showPoPp('是否立即提交试卷？', 'submit')
               }
             }
 
             // 计算分数
             function caclScore() {
-              showPop.value = false
               // loading
               loading.value = true
               // 计算选择题分数
@@ -187,14 +199,15 @@
             }
 
             // 显示弹窗
-            function showPoPp(msg) {
+            function showPoPp(msg, type) {
               popMsg.value = msg
+              popType.value = type
               showPop.value = true
             }
 
             // 重做
             function redo() {
-              location.reload()
+              showPoPp('是否重做试卷？', 'redo')
             }
 
             // 选择题是否选错
@@ -210,10 +223,23 @@
             // 判断题是否选错
             function isJudgeWrong(item) {
               if (isSubmit.value) {
-                if(item.checked=== undefined) return true
-                if(item.checked !== item.answer) return true
+                if (item.checked === undefined) return true
+                if (item.checked !== item.answer) return true
               } else {
                 return false
+              }
+            }
+
+            // 弹窗确定
+            function popConfirm() {
+              showPop.value = false
+              console.log(popType.value)
+              if (popType.value === 'submit') {
+                console.log('提交试卷')
+                caclScore()
+              } else if (popType.value === 'redo') {
+                console.log('重做试卷')
+                location.reload()
               }
             }
 
@@ -227,10 +253,10 @@
               score,
               scrollToTop,
               submit,
-              caclScore,
               redo,
               isChoiceWrong,
               isJudgeWrong,
+              popConfirm,
             }
           },
         })
