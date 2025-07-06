@@ -1,32 +1,17 @@
-h1 {
-  font-size: 1.3rem;
-  text-align: center;
-}
-
-h2 {
-  font-size: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 h2 > span {
   color: red;
 }
 
-body {
-  padding: 0 1rem 0 1rem;
-}
-
-.right{
+.right {
   color: green;
 }
 
-.choice-item,.judge-item{
+.choice-item,
+.judge-item {
   margin-top: 1.2rem;
 }
 
-.choice-item .answer{
+.choice-item .answer {
   margin-top: 0.3rem;
 }
 
@@ -40,8 +25,9 @@ body {
   color: green;
 }
 
-.top{
+.top {
   position: fixed;
   right: 0.3rem;
   bottom: 0.3rem;
 }
+

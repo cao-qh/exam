@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>保健按摩师初级理论模拟考试</title>
+    <link rel="stylesheet" href="./styles/public.css" />
+    <link rel="stylesheet" href="./styles/vant.css" />
+    <link rel="stylesheet" href="./styles/exam.css" />
+  </head>
+  <body>
+    <script src="./lib/vue.global.js"></script>
+    <script src="./lib/vant.min.js"></script>
+    <script src="./utils/randomDraw.js"></script>
+    <div id="app">
+      <h1>保健按摩师初级理论模拟考试</h1>
+
+      <h3>选择题</h3>
+      <div class="choice-item" v-for="(item,index) in choiceList" :key="item.id">
+        <span class="question">{{index+1}}.{{item.title}}</span>
+        <div class="answer">
+          <van-radio-group v-model="item.checked" shape="square">
+            <van-radio :name="item.options[0]">{{item.options[0]}}</van-radio>
+            <div style="height: 0.3rem;"></div>
+            <van-radio :name="item.options[1]">{{item.options[1]}}</van-radio>
+            <div style="height: 0.3rem;"></div>
+            <van-radio :name="item.options[2]">{{item.options[2]}}</van-radio>
+            <div style="height: 0.3rem;"></div>
+            <van-radio :name="item.options[3]">{{item.options[3]}}</van-radio>
+          </van-radio-group>
+        </div>
+      </div>
+
+      <h3>判断题</h3>
+      <div class="judge-item" v-for="(item,index) in judgeList" :key="item.id">
+        <span>{{index+1}}.{{item.title}}</span>
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref } = Vue
+
+      fetch('./data.json')
+        .then((response) => response.json())
+        .then((data) => {
+          initApp(data)
+        })
+        .catch((error) => console.error('Error loading data:', error))
+
+      function initApp(data) {
+        const app = createApp({
+          setup() {
+            // 选择题列表
+            const choiceList = ref(randomDraw(data.choices, 80))
+            // 判断题列表
+            const judgeList = ref(randomDraw(data.judges, 20))
+
+            // 滚动到顶部
+            function scrollToTop() {
+              window.scrollTo(0, 0)
+            }
+
+            return {
+              choiceList,
+              judgeList,
+              scrollToTop,
+            }
+          },
+        })
+        app.use(vant)
+        app.mount('#app')
+      }
+    </script>
+  </body>
+</html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>保健按摩师模拟考试系统</title>
+    <link rel="stylesheet" href="./styles/public.css">
     <link rel="stylesheet" href="./styles/index.css" />
     <link rel="stylesheet" href="./styles/vant.css" />
   </head>
@@ -17,15 +18,20 @@
 
       <h2>
         <span>*绿色文字是正确答案</span>
-        <van-button type="primary" size="small" @click="showPop = true"
-          >开始模拟考试</van-button
+        <div>
+          <van-button style="margin-right: 0.5rem;" type="primary" size="small" @click="showPop = true"
+          >模拟考试</van-button
         >
+        <van-button type="primary" size="small" 
+          >成绩查询</van-button
+        >
+        </div>
       </h2>
 
       <h3>选择题</h3>
 
       <div class="choice-item" v-for="item in data.choices" :key="item.id">
-        <span class="question">{{item.title}}</span>
+        <span class="question">{{item.id}}.{{item.title}}</span>
         <div class="answer">
           <div>
             <span :class="isChiceRight(item,0)">{{item.options[0]}}</span>
@@ -39,7 +45,7 @@
       <h3>判断题</h3>
 
       <div class="judge-item" v-for="item in data.judges" :key="item.id">
-        <div class="question">{{item.title}}</div>
+        <div class="question">{{item.id}}.{{item.title}}</div>
         <div class="answer">{{item.answer}}</div>
       </div>
 
@@ -51,9 +57,14 @@
       </div>
       <div style="height: 1.5rem"></div>
 
-      <van-popup v-model:show="showPop" round :style="{ padding: '1rem' }"
-        >该功能在测试阶段，在7月7号早上上线。</van-popup
-      >
+      <van-popup v-model:show="showPop" round :style="{ padding: '1rem',display: 'flex', justifyContent: 'center', alignItems: 'center',flexDirection: 'column',width: '80%' }">
+        <p>
+          考试时间为90分钟，计时结束会自动提交试卷。题目为80道选择题，20道判断题。每题1分，共100分。题目随机从题库中抽取，每套试卷不同。
+        </p>
+        <van-button  type="primary"  @click="toExam"
+          >明白了</van-button
+        >
+      </van-popup>
     </div>
 
     <script>
@@ -131,7 +142,9 @@
             }
 
             // 去模拟考试
-            function toExam() {}
+            function toExam() {
+              window.location.href = './exam.html'
+            }
 
             return {
               data,
